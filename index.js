@@ -20,7 +20,7 @@ var conversation = watson.conversation({
 
 //gcba-NuevaPropuesta
 // var workspaceID="d746a3d1-af42-4961-9c3a-e20b61676a6d";
-var workspaceID=process.env.WORKSPACE || "6c9dcee7-ba97-4b2e-9dae-c185705e8503";
+var workspaceID=process.env.WORKSPACE;
 var fecha6meses = new Date().setMonth(new Date().getMonth() - 6);
 var context = {
     "6meses": new Date(fecha6meses)
@@ -102,9 +102,6 @@ router.get('/sendData', (req, res) => {
           context = response.context;
           console.log("confidence is: ",response.intents[0].confidence)
 
-          //Si la confidence de Conversation es mayor o igual a 0.7 devuelvo el msj de Conversation
-          // O me fijo si el flag de context.slot esta activo para que no se vaya a WEX
-          if(response.intents[0].confidence >= confidenceLevel || context.slot){
             console.log("I'm in");
             // res.writeHead(200, {"Content-Type": "application/json"});
             json = JSON.stringify({
@@ -113,92 +110,6 @@ router.get('/sendData', (req, res) => {
               DescriptionMessage:"OK"
             });
             res.send(json);
-          }
-          //Si la confidence de Conversation es menor voy a buscar a WEX y traigo los resultados
-          else if(response.intents[0].confidence < confidenceLevel){
-
-            //Creo el queryObject con AND como operator
-            var regex = /\.|\?|\!/;
-            var result = message.replaceAll(regex,"");
-            var messageArray = result.split(" ");
-            var queryObjectAND = '<operator logic="and">';
-            for(var i = 0;i<messageArray.length;i++){
-              queryObjectAND += `<term field="query" str="${messageArray[i]}" position="${i}"/>`;
-            }
-            queryObjectAND += '</operator>';
-
-            //Creo el queryObject con OR como operator
-            var queryObjectOR = "";
-            queryObjectOR += queryObjectAND;
-            regex = /<operator logic="and">/;
-            queryObjectOR = queryObjectOR.replaceAll(regex,'<operator logic="or">');
-
-            //Creo variable para resultados con AND. Esto voy a chequiar si trajo algo y si no, tiro el OR
-            wexResponse = "";
-
-            wex.listarDocumentos(queryObjectAND,numeroArchivosTraer).then((result)=>{
-              console.log("wexANDResponse: ");
-              // console.log(result);
-              // console.log(result.Datos.Documentos);
-              //Parseo la respuesta para eliminar indeseados y converitr a JSON
-              result = JSON.stringify(result, null, 2);
-              var regex = /\\n|<td>|<\/td>|<div>|<\/div>|<font>|<\/font>|<\/p>|<p>/;
-              result = result.replaceAll(regex,"");
-              var regex = /<br>|<br >|<\/br>|<\/ br>|<br\/>/;
-              result = result.replaceAll(regex," ");
-              wexResponse = result;
-
-              console.log(" ");
-              console.log(" ");
-              console.log(" ");
-              // console.log(" -----  wexResponse -------");
-              // console.log(wexResponse);
-              wexResponseToCheck = JSON.parse(wexResponse);
-              // console.log(" -----  wexResponseToCheck.Datos -------");
-              // console.log(wexResponseToCheck.Datos);
-              // console.log(" -----  wexResponseToCheck.Datos.Documentos -------");
-              // console.log(wexResponseToCheck.Datos.Documentos);
-              // console.log(" -----  wexResponseToCheck.Datos.Documentos.URL -------");
-              // console.log(wexResponseToCheck.Datos.Documentos[0].URL);
-              // console.log(" -----  wexResponseToCheck.Datos.Documentos.Titulo -------");
-              // console.log(wexResponseToCheck.Datos.Documentos[0].Titulo);
-              // console.log(" -----  wexResponseToCheck.Datos.Documentos.ParrafoDestacado -------");
-              // console.log(wexResponseToCheck.Datos.Documentos[0].ParrafoDestacado);
-              if(wexResponseToCheck.Datos.Documentos[0].URL === "" && wexResponseToCheck.Datos.Documentos[0].Titulo === "" && wexResponseToCheck.Datos.Documentos[0].ParrafoDestacado === ""){
-                console.log(" ");
-                console.log(" ");
-                console.log(" ");
-                console.log(" -----  NO SE ENCONTRO NADA CON AND -------");
-                console.log(" -----  Buscando con OR.............. -------");
-                wex.listarDocumentos(queryObjectOR,numeroArchivosTraer).then((result)=>{
-                  // console.log("wexORResponse: ");
-                  // console.log(util.inspect(result, false, null))
-                  //Parseo la respuesta para eliminar indeseados y converitr a JSON
-                  result = JSON.stringify(result, null, 2);
-                  var regex = /\\n|<td>|<\/td>|<div>|<\/div>|<font>|<\/font>|<\/p>|<p>/;
-                  result = result.replaceAll(regex,"");
-                  var regex = /<br>|<br >|<\/br>|<\/ br>|<br\/>/;
-                  result = result.replaceAll(regex," ");
-                  wexResponse = result;
-                  console.log(" ");
-                  console.log(" ");
-                  console.log(" ");
-                  console.log(" ");
-                  console.log(" -----  wexResponse AND result was replaced by OR result -------");
-                  res.send(wexResponse);
-                }).catch((e)=>console.log("Rejected OR promise: "+e.stack));
-              }else{
-                res.send(wexResponse);
-              };
-            }).catch((e)=>console.log("Rejected AND promise: "+e.stack));
-
-          }
-          //Si es menor a 0.6, devuelvo el mensaje de Conversation de "No entendi"
-          //IDEAA: definir entre 0.5 y 0.7 el rango de respuestas a WEX como primer IF
-          // y que el Else sea Conversation normal
-          else{
-            console.log("IM Out");
-          }
 
 
       }
