@@ -303,13 +303,13 @@ function answerBack(data) {
 
           //alternativas
           var html_possible_questions = '';
-          if( data.Response.context.USR_01_alt_questions.length){
-              html_possible_questions+= '<ul class="answer-options">';
-              for(var i = 0; i<data.Response.context.USR_01_alt_questions.length; i++){
-                  html_possible_questions+='<li><a class="possibleQuestion" onclick="writeAndSendMessage(\''+data.Response.context.USR_01_alt_questions[i]+'\');">'+data.Response.context.USR_01_alt_questions[i]+'</a></li>';
-              }
-              html_possible_questions+= '</ul>';
-          }
+          // if( data.Response.context.USR_01_alt_questions.length){
+          //     html_possible_questions+= '<ul class="answer-options">';
+          //     for(var i = 0; i<data.Response.context.USR_01_alt_questions.length; i++){
+          //         html_possible_questions+='<li><a class="possibleQuestion" onclick="writeAndSendMessage(\''+data.Response.context.USR_01_alt_questions[i]+'\');">'+data.Response.context.USR_01_alt_questions[i]+'</a></li>';
+          //     }
+          //     html_possible_questions+= '</ul>';
+          // }
 
           //otras Intentions
           // var html_possible_questions = '';
@@ -337,19 +337,7 @@ function answerBack(data) {
           obj_msg.context = data.Response.context;
           writeAnswer(obj_msg);
 
-      }
-          }
-
-          var obj_msg = {
-            'from': 'wex',
-            'message': html_message,
-            // 'suggestion': html_suggestion_topics,
-            // 'possible_questions': html_possible_questions,
-            // 'confidence': confidence,
-            'time': currentTime()
-          };
-
-          writeAnswer(obj_msg);
+        }//Cierro el data.response
 
       }else{
         var obj_msg = {
@@ -364,7 +352,7 @@ function answerBack(data) {
         writeAnswer(obj_msg);
       }
 
-    }
+
 
 }
 

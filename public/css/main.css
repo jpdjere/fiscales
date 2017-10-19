@@ -1675,8 +1675,8 @@ and (max-width : 767px) {
 
 	/* watson container - messenger frame - messenger body */
 	#chat_container .messenger-frame .messenger-body {
-		height: 100%!important;
-		/*padding-top: 50px;*/
+		height: 88%!important;
+		padding-top: 15px;
 		padding-bottom: 50px;
 		overflow: hidden;
 		position: relative;

@@ -9,9 +9,13 @@ const util = require('util')
 
 var wex = require('./routes/index');
 //Credenciales de Conversation-GCBA-2
+let conversation_user=process.env.CONVERSATION_USER;
+let conversation_password=process.env.CONVERSATION_PASSWORD;
+var workspaceID=process.env.WORKSPACE;
+
 var conversation = watson.conversation({
-  username: '1e57fec7-79fd-41b9-96d6-f35f1182423b',
-  password: 'jdTHdcSG2xbr',
+  username: conversation_user,
+  password: conversation_password,
   version: 'v1',
   version_date: '2016-09-20'
 });
@@ -20,7 +24,7 @@ var conversation = watson.conversation({
 
 //gcba-NuevaPropuesta
 // var workspaceID="d746a3d1-af42-4961-9c3a-e20b61676a6d";
-var workspaceID=process.env.WORKSPACE;
+
 var fecha6meses = new Date().setMonth(new Date().getMonth() - 6);
 var context = {
     "6meses": new Date(fecha6meses)
